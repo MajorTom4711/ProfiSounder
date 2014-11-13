@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="sounderConfig" type="sounderConfig"/>
+
+  <xs:complexType name="sounderConfig">
+    <xs:sequence>
+      <xs:element name="switchStateProvider" type="providerWrapper"/>
+      <xs:element name="switch" type="switch" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="defaultSampleRate" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="providerWrapper">
+    <xs:sequence>
+      <xs:choice minOccurs="0">
+        <xs:element name="netPoller" type="switchStateNetPoller"/>
+        <xs:element name="gpioProvider" type="rpiGPIOStateProvider"/>
+        <xs:element name="gpioProviderNoRoot" type="rpiGPIOStateProviderNoRoot"/>
+        <xs:element name="netPollerOld" type="switchStateNetPollerOldMethod"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="switchStateNetPoller">
+    <xs:complexContent>
+      <xs:extension base="abstractSwitchStateProvider">
+        <xs:sequence/>
+        <xs:attribute name="profiluxAddress" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="abstractSwitchStateProvider" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="rpiGPIOStateProvider">
+    <xs:complexContent>
+      <xs:extension base="abstractSwitchStateProvider">
+        <xs:sequence>
+          <xs:element name="switchMapping" type="switchMapping" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="switchMapping">
+    <xs:sequence/>
+    <xs:attribute name="switchNumber" type="xs:int" use="required"/>
+    <xs:attribute name="rpiPin" type="xs:int" use="required"/>
+    <xs:attribute name="rpiPinFeedbackHigh" type="xs:int"/>
+    <xs:attribute name="pullUp" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="rpiGPIOStateProviderNoRoot">
+    <xs:complexContent>
+      <xs:extension base="abstractSwitchStateProvider">
+        <xs:sequence>
+          <xs:element name="switchMapping" type="switchMapping" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="switchStateNetPollerOldMethod">
+    <xs:complexContent>
+      <xs:extension base="abstractSwitchStateProvider">
+        <xs:sequence/>
+        <xs:attribute name="profiluxAddress" type="xs:string" use="required"/>
+        <xs:attribute name="switchGroup" type="switchGroup"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="switch">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="onStateChange" type="onStateChange"/>
+        <xs:element name="onStateDuration" type="onStateDuration"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="switchNumber" type="xs:int" use="required"/>
+    <xs:attribute name="order" type="xs:int"/>
+    <xs:attribute name="samplingRateLow" type="xs:int"/>
+    <xs:attribute name="samplingRateHigh" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="onStateChange">
+    <xs:complexContent>
+      <xs:extension base="StateChange">
+        <xs:sequence/>
+        <xs:attribute name="stateChanged" type="stateChanged"/>
+        <xs:attribute name="checkStartupSate" type="xs:boolean"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="StateChange" abstract="true">
+    <xs:sequence>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="setVolumeSound" type="setVolumeSound"/>
+        <xs:element name="setVolumeSwitch" type="setVolumeSwitch"/>
+        <xs:element name="playSound" type="playSound"/>
+        <xs:element name="stopSound" type="stopSound"/>
+        <xs:element name="stopSwitchSounds" type="stopSwitch"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="oneOfAction" type="xs:boolean"/>
+    <xs:attribute name="skipActionIfActive" type="xs:boolean"/>
+  </xs:complexType>
+
+  <xs:complexType name="setVolumeSound">
+    <xs:sequence/>
+    <xs:attribute name="soundFile" type="xs:string" use="required"/>
+    <xs:attribute name="volume" type="xs:float" use="required"/>
+    <xs:attribute name="fadeDuration" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="setVolumeSwitch">
+    <xs:sequence/>
+    <xs:attribute name="volume" type="xs:float" use="required"/>
+    <xs:attribute name="switchNumber" type="xs:int" use="required"/>
+    <xs:attribute name="fadeDuration" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="playSound">
+    <xs:sequence/>
+    <xs:attribute name="soundFile" type="xs:string" use="required"/>
+    <xs:attribute name="fadeInDuration" type="xs:int"/>
+    <xs:attribute name="loopCount" type="xs:int"/>
+    <xs:attribute name="volume" type="xs:float"/>
+  </xs:complexType>
+
+  <xs:complexType name="stopSound">
+    <xs:sequence/>
+    <xs:attribute name="soundFile" type="xs:string" use="required"/>
+    <xs:attribute name="fadeOutDuration" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="stopSwitch">
+    <xs:sequence/>
+    <xs:attribute name="switchNumber" type="xs:int" use="required"/>
+    <xs:attribute name="fadeOutDuration" type="xs:int"/>
+  </xs:complexType>
+
+  <xs:complexType name="onStateDuration">
+    <xs:complexContent>
+      <xs:extension base="StateChange">
+        <xs:sequence/>
+        <xs:attribute name="durationFromMS" type="xs:int"/>
+        <xs:attribute name="durationToMS" type="xs:int"/>
+        <xs:attribute name="stateWas" type="stateWas"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:simpleType name="switchGroup">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="S1_S24"/>
+      <xs:enumeration value="S25_S49"/>
+      <xs:enumeration value="S50_S74"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="stateChanged">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TO_LOW"/>
+      <xs:enumeration value="TO_HIGH"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="stateWas">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="LOW"/>
+      <xs:enumeration value="HIGH"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

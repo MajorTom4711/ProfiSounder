@@ -1,0 +1,16 @@
+This tool uses software libraries from:
+
+The Pi4J Project (http://pi4j.com/) released under the Apache Software License, Version 2.0, see copy in this folder
+
+The JLayer, MP3SPI and the VorbisSPI Project (http://www.javazoom.net/projects.html) released under the 
+GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html), included as LGPL 3.0
+
+The Tritonus: Open Source Java Sound library (http://www.tritonus.org/) released under the 
+GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html), included as LGPL 3.0
+
+The JOgg and JOrbis libraries (http://www.jcraft.com/jorbis/) released under the 
+GNU Lesser General Public License (http://www.gnu.org/licenses/lgpl.html), 
+licence included as Copying.lib in this directory
+
+The google-gson library (https://code.google.com/p/google-gson/) released under the Apache Software License, 
+Version 2.0, see copy in this folder
