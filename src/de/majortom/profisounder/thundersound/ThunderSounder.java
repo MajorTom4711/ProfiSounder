@@ -37,6 +37,7 @@ public class ThunderSounder implements ISounderInterface, ISwitchStateListener {
 	public ThunderSounder(File xmlConfigFile, ResourceBundle messages) {
 		this.messages = messages;
 
+		System.out.println(xmlConfigFile.getAbsolutePath());
 		SounderConfig config = JAXB.unmarshal(xmlConfigFile, SounderConfig.class);
 
 		try {

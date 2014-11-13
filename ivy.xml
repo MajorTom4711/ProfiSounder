@@ -21,9 +21,19 @@
        xsi:noNamespaceSchemaLocation="http://ant.apache.org/ivy/schemas/ivy.xsd">
     <info
         organisation=""
-        module=""
+        module="profi sounder"
         status="integration">
 	</info>
 	
-	<dependencies>		<dependency org="net.sourceforge.collections" name="collections-generic" rev="latest.release"/></dependencies>
+	<dependencies>		
+		<dependency org="net.sourceforge.collections" name="collections-generic" rev="latest.release"/>
+		<dependency org="org.jcraft" name="jorbis" rev="0.0.17"/>
+		<dependency org="com.google.code.gson" name="gson" rev="2.3"/>
+		<dependency org="com.pi4j" name="pi4j-core" rev="0.0.5"/>
+		
+		<dependency org="com.googlecode.soundlibs" name="tritonus-share" rev="0.3.7-2"/>
+		
+		<dependency org="com.googlecode.soundlibs" name="vorbisspi" rev="1.0.3-1"/>
+		<dependency org="com.googlecode.soundlibs" name="mp3spi" rev="1.9.5-1"/>
+	</dependencies>
 </ivy-module>

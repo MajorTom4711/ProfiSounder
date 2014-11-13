@@ -13,8 +13,8 @@ import de.majortom.profisounder.thundersound.ISounderInterface;
 import de.majortom.profisounder.thundersound.switches.AbstractStateChange;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnStateDuration extends AbstractStateChange {
-	public enum StateWas {
+public class OnStateChanged extends AbstractStateChange {
+	public enum PreviousState {
 		LOW, HIGH
 	}
 
@@ -23,11 +23,11 @@ public class OnStateDuration extends AbstractStateChange {
 	@XmlAttribute(required = false)
 	private Integer durationToMS = -1;
 	@XmlAttribute()
-	private StateWas stateWas = StateWas.HIGH;
+	private PreviousState previousState = PreviousState.HIGH;
 
 	private long durationTimer = -1;
 
-	public OnStateDuration() {
+	public OnStateChanged() {
 	}
 
 	@Override
@@ -44,13 +44,13 @@ public class OnStateDuration extends AbstractStateChange {
 	@Override
 	public void switchStateChanged(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException {
 		boolean check = false;
-		if (stateWas == StateWas.HIGH) {
+		if (previousState == PreviousState.HIGH) {
 			if ((durationTimer < 0) || state) {
 				durationTimer = System.currentTimeMillis();
 			} else {
 				check = true;
 			}
-		} else if (stateWas == StateWas.LOW) {
+		} else if (previousState == PreviousState.LOW) {
 			if ((durationTimer < 0) || !state) {
 				durationTimer = System.currentTimeMillis();
 			} else {
@@ -62,7 +62,7 @@ public class OnStateDuration extends AbstractStateChange {
 			int curTimeDiff = (int) (System.currentTimeMillis() - durationTimer);
 
 			if ((curTimeDiff >= durationFromMS) && ((durationToMS < 0) || (curTimeDiff <= durationToMS))) {
-				logger.log(Level.FINE, MessageFormat.format(messages.getString("statechange.duration.performactions"), stateWas, curTimeDiff));
+				logger.log(Level.FINE, MessageFormat.format(messages.getString("statechange.duration.performactions"), previousState, curTimeDiff));
 				doActions(thunderSounder, messages);
 			}
 		}

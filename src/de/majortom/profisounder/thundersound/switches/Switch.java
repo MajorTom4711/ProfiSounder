@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlElements;
 
 import de.majortom.profisounder.thundersound.ISounderInterface;
 import de.majortom.profisounder.thundersound.switches.statechanges.AbstractAction;
-import de.majortom.profisounder.thundersound.switches.statechanges.OnStateChange;
-import de.majortom.profisounder.thundersound.switches.statechanges.OnStateDuration;
+import de.majortom.profisounder.thundersound.switches.statechanges.OnStateIs;
+import de.majortom.profisounder.thundersound.switches.statechanges.OnStateChanged;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Switch implements Comparable<Switch> {
@@ -30,7 +30,7 @@ public class Switch implements Comparable<Switch> {
 	@XmlAttribute(required = false)
 	private Integer samplingRateHigh = -1;
 
-	@XmlElements({ @XmlElement(name = "onStateChange", type = OnStateChange.class), @XmlElement(name = "onStateDuration", type = OnStateDuration.class), })
+	@XmlElements({ @XmlElement(name = "onStateIs", type = OnStateIs.class), @XmlElement(name = "onStateChanged", type = OnStateChanged.class), })
 	private List<AbstractStateChange> stateChanges;
 
 	private List<AbstractAction> actions = new ArrayList<AbstractAction>();

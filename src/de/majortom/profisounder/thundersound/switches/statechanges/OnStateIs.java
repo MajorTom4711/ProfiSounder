@@ -13,17 +13,17 @@ import de.majortom.profisounder.thundersound.ISounderInterface;
 import de.majortom.profisounder.thundersound.switches.AbstractStateChange;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public class OnStateChange extends AbstractStateChange {
-	public enum StateChanged {
-		TO_LOW, TO_HIGH
+public class OnStateIs extends AbstractStateChange {
+	public enum CurrentState {
+		LOW, HIGH
 	}
 
 	@XmlAttribute(required = false)
-	private StateChanged stateChanged = StateChanged.TO_HIGH;
+	private CurrentState currentState = CurrentState.HIGH;
 	@XmlAttribute(required = false)
-	private Boolean checkStartupSate = true;
+	private Boolean checkStateAtStartup = true;
 
-	public OnStateChange() {
+	public OnStateIs() {
 	}
 
 	@Override
@@ -35,14 +35,14 @@ public class OnStateChange extends AbstractStateChange {
 
 	@Override
 	public void setInitialState(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException {
-		if (checkStartupSate) {
+		if (checkStateAtStartup) {
 			switchStateChanged(state, thunderSounder, messages);
 		}
 	}
 
 	@Override
 	public void switchStateChanged(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException {
-		if ((state && (stateChanged == StateChanged.TO_HIGH)) || (!state && (stateChanged == StateChanged.TO_LOW))) {
+		if ((state && (currentState == CurrentState.HIGH)) || (!state && (currentState == CurrentState.LOW))) {
 			logger.log(Level.FINE, MessageFormat.format(messages.getString("statechange.change.performactions"), state));
 			doActions(thunderSounder, messages);
 		}

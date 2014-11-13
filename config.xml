@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"  ?>
-<sounderConfig defaultSampleRate="5000" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema1.xsd">
+<sounderConfig defaultSampleRate="5000" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="config_schema.xsd">
 	<switchStateProvider>
 		<netPollerOld profiluxAddress="http://192.168.0.200" />
 	</switchStateProvider>
-	<switch samplingRateHigh="500" switchNumber="1" order="2">
-		<onStateChange stateChanged="TO_HIGH">
+	<switch samplingRateHigh="500" switchNumber="1">
+		<onStateChanged previousState="LOW">
 			<setVolumeSwitch fadeDuration="40000" switchNumber="3" volume="0.6" />
-		</onStateChange>
-		<onStateChange stateChanged="TO_LOW">
+		</onStateChanged>
+		<onStateChanged previousState="HIGH">
 			<setVolumeSwitch fadeDuration="40000" switchNumber="3" volume="0.1" />
-		</onStateChange>
+		</onStateChanged>
 	</switch>
-	<switch switchNumber="2" order="3">
-		<onStateDuration stateWas="HIGH" durationToMS="3000" oneOfAction="true">
+	<switch switchNumber="2">
+		<onStateChanged previousState="HIGH" durationToMS="3000" oneOfAction="true">
 			<playSound soundFile="sounds/Thunder_04.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_04_01.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_05.wav" />
@@ -30,8 +30,8 @@
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_11.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_11_01.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_12.wav" />
-		</onStateDuration>
-		<onStateDuration stateWas="HIGH" durationFromMS="3000" oneOfAction="true">
+		</onStateChanged>
+		<onStateChanged previousState="HIGH" durationFromMS="3000" oneOfAction="true">
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13_01.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13_02.wav" />
@@ -40,14 +40,14 @@
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_16.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_19.wav" />
 			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_25.wav" />
-		</onStateDuration>
+		</onStateChanged>
 	</switch>
-	<switch switchNumber="3" order="1">
-		<onStateChange stateChanged="TO_HIGH" skipActionIfActive="false">
-			<playSound fadeInDuration="60000" loopCount="-1" volume="0.1" soundFile="sounds/Rain.ogg" />
-		</onStateChange>
-		<onStateChange stateChanged="TO_LOW" skipActionIfActive="false">
+	<switch switchNumber="3">
+		<onStateIs currentState="HIGH" skipActionIfActive="false">
+			<playSound fadeInDuration="60000" loopCount="-1" volume="0.1" soundFile="sounds/Rain.mp3" />
+		</onStateIs>
+		<onStateIs currentState="LOW" skipActionIfActive="false">
 			<stopSwitchSounds fadeOutDuration="60000" switchNumber="3" />
-		</onStateChange>
+		</onStateIs>
 	</switch>
 </sounderConfig>
