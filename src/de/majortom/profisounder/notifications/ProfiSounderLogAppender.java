@@ -34,8 +34,8 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 		logBuffer = new CircularFifoBuffer<>(logBufferSize);
 	}
 
-	@Override
-	public void flush() {
+	public void addLockUpdatedListener(ILogUpdatedListener l) {
+		listenerList.add(ILogUpdatedListener.class, l);
 	}
 
 	@Override
@@ -44,14 +44,7 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 	}
 
 	@Override
-	public void publish(LogRecord record) {
-		if (!active)
-			throw new RuntimeException("This handler is closed!");
-
-		Message msg = new Message(new Date(record.getMillis()), record.getLevel(), record.getMessage(), record.getThrown(), false, (Object[]) null);
-		logBuffer.add(msg);
-
-		fireLogUpdated(true, false, msg);
+	public void flush() {
 	}
 
 	public List<Message> getLogBuffer() {
@@ -88,6 +81,21 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 	}
 
 	@Override
+	public void publish(LogRecord record) {
+		if (!active)
+			throw new RuntimeException("This handler is closed!");
+
+		Message msg = new Message(new Date(record.getMillis()), record.getLevel(), record.getMessage(), record.getThrown(), false, (Object[]) null);
+		logBuffer.add(msg);
+
+		fireLogUpdated(true, false, msg);
+	}
+
+	public void removeLockUpdatedListener(ILogUpdatedListener l) {
+		listenerList.remove(ILogUpdatedListener.class, l);
+	}
+
+	@Override
 	public void reset(long key, String message) {
 		reset(key, message, null);
 	}
@@ -106,14 +114,6 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 
 			fireLogUpdated(true, false, msg);
 		}
-	}
-
-	public void addLockUpdatedListener(ILogUpdatedListener l) {
-		listenerList.add(ILogUpdatedListener.class, l);
-	}
-
-	public void removeLockUpdatedListener(ILogUpdatedListener l) {
-		listenerList.remove(ILogUpdatedListener.class, l);
 	}
 
 	protected void fireLogUpdated(boolean logUpdated, boolean notificationRemoved, Message msg) {

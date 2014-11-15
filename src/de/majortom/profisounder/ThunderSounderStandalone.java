@@ -11,7 +11,6 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
-import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -19,9 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
@@ -31,12 +28,9 @@ import java.util.logging.SimpleFormatter;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
-import javax.swing.WindowConstants;
 
 import de.majortom.profisounder.gui.GUISettings;
 import de.majortom.profisounder.gui.ProfisounderGUI;
-import de.majortom.profisounder.notifications.IPersistentNotificationConsumer;
-import de.majortom.profisounder.notifications.PersistentNotifications;
 import de.majortom.profisounder.notifications.ProfiSounderLogAppender;
 import de.majortom.profisounder.switchstateprovider.events.ISwitchStateListener;
 import de.majortom.profisounder.thundersound.ThunderSounder;
@@ -162,6 +156,10 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 		headless = GraphicsEnvironment.isHeadless();
 	}
 
+	public ThunderSounder getSounder() {
+		return sounder;
+	}
+
 	public boolean requestExit(Component parent) {
 		if (!headless && JOptionPane.showConfirmDialog(parent, messages.getString("dialogs.exit.confirm"), messages.getString("dialogs.exit.confirm.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
 			return false;
@@ -175,10 +173,6 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 
 		System.exit(0);
 		return true;
-	}
-
-	public ThunderSounder getSounder() {
-		return sounder;
 	}
 
 	@Override

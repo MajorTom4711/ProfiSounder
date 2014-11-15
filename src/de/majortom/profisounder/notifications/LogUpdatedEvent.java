@@ -18,19 +18,19 @@ public class LogUpdatedEvent {
 		this.notificationRemoved = notificationRemoved;
 	}
 
-	public boolean isLogUpdated() {
-		return logUpdated;
-	}
-
-	public boolean isNotificationRemoved() {
-		return notificationRemoved;
+	public IPersistentNotificationConsumer getConsumer() {
+		return consumer;
 	}
 
 	public Message getMessage() {
 		return message;
 	}
 
-	public IPersistentNotificationConsumer getConsumer() {
-		return consumer;
+	public boolean isLogUpdated() {
+		return logUpdated;
+	}
+
+	public boolean isNotificationRemoved() {
+		return notificationRemoved;
 	}
 }

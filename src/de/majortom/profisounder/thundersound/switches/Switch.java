@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlElements;
 
 import de.majortom.profisounder.thundersound.ISounderInterface;
 import de.majortom.profisounder.thundersound.switches.statechanges.AbstractAction;
-import de.majortom.profisounder.thundersound.switches.statechanges.OnStateIs;
 import de.majortom.profisounder.thundersound.switches.statechanges.OnStateChanged;
+import de.majortom.profisounder.thundersound.switches.statechanges.OnStateIs;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class Switch implements Comparable<Switch> {

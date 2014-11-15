@@ -21,12 +21,12 @@ public class SwitchMapping {
 		return rpiPin;
 	}
 
-	public Integer getSwitchNumber() {
-		return switchNumber;
-	}
-
 	public Integer getRpiPinFeedbackHigh() {
 		return rpiPinFeedbackHigh;
+	}
+
+	public Integer getSwitchNumber() {
+		return switchNumber;
 	}
 
 	public Boolean isPullUp() {

@@ -23,7 +23,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -39,8 +38,6 @@ import de.majortom.profisounder.notifications.ProfiSounderLogAppender;
 import de.majortom.profisounder.types.Message;
 
 public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
-	private static final long serialVersionUID = -6094576807363459690L;
-
 	@SuppressWarnings("serial")
 	private class MessageTableModel extends AbstractTableModel {
 		private final DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm:ss.SSS");
@@ -50,14 +47,16 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 			this.messageLog = messageLog;
 		}
 
-		@Override
-		public int getColumnCount() {
-			return 3;
+		public void addMessage(Message msg) {
+			messageLog.add(msg);
+			Collections.sort(messageLog);
+
+			fireTableDataChanged();
 		}
 
 		@Override
-		public int getRowCount() {
-			return messageLog.size();
+		public int getColumnCount() {
+			return 3;
 		}
 
 		@Override
@@ -73,6 +72,11 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 		}
 
 		@Override
+		public int getRowCount() {
+			return messageLog.size();
+		}
+
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Message msg = messageLog.get(rowIndex);
 			switch (columnIndex) {
@@ -84,14 +88,9 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 				return msg.getMessage();
 			}
 		}
-
-		public void addMessage(Message msg) {
-			messageLog.add(msg);
-			Collections.sort(messageLog);
-
-			fireTableDataChanged();
-		}
 	}
+
+	private static final long serialVersionUID = -6094576807363459690L;
 
 	private JPanel contentPane;
 
@@ -124,6 +123,14 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 		initGUI();
 	}
 
+	public GUISettings getSettings() {
+		return settings;
+	}
+
+	public boolean isWindowActive() {
+		return windowActive;
+	}
+
 	@Override
 	public void logUpdated(LogUpdatedEvent luEvent) {
 		if (luEvent.isLogUpdated())
@@ -132,12 +139,28 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 			mtmCriticalMessages.addMessage(luEvent.getMessage());
 	}
 
-	public GUISettings getSettings() {
-		return settings;
+	private void changeActiveLabel() {
+		if (tglbtnSounderActive.isSelected())
+			tglbtnSounderActive.setText(messages.getString("dialogs.gui.sounderactivebutton.active"));
+		else
+			tglbtnSounderActive.setText(messages.getString("dialogs.gui.sounderactivebutton.inactive"));
 	}
 
-	public boolean isWindowActive() {
-		return windowActive;
+	private void changeMuteLabel() {
+		if (tglbtnMute.isSelected())
+			tglbtnMute.setText(messages.getString("dialogs.gui.mutebutton.active"));
+		else
+			tglbtnMute.setText(messages.getString("dialogs.gui.mutebutton.inactive"));
+	}
+
+	private void close(boolean exitTool) {
+		settings.saveSettings();
+		appender.removeLockUpdatedListener(this);
+
+		if (exitTool)
+			standalone.requestExit(ProfisounderGUI.this);
+		else
+			dispose();
 	}
 
 	private void initGUI() {
@@ -352,29 +375,5 @@ public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 				windowActive = false;
 			}
 		});
-	}
-
-	private void close(boolean exitTool) {
-		settings.saveSettings();
-		appender.removeLockUpdatedListener(this);
-
-		if (exitTool)
-			standalone.requestExit(ProfisounderGUI.this);
-		else
-			dispose();
-	}
-
-	private void changeMuteLabel() {
-		if (tglbtnMute.isSelected())
-			tglbtnMute.setText(messages.getString("dialogs.gui.mutebutton.active"));
-		else
-			tglbtnMute.setText(messages.getString("dialogs.gui.mutebutton.inactive"));
-	}
-
-	private void changeActiveLabel() {
-		if (tglbtnSounderActive.isSelected())
-			tglbtnSounderActive.setText(messages.getString("dialogs.gui.sounderactivebutton.active"));
-		else
-			tglbtnSounderActive.setText(messages.getString("dialogs.gui.sounderactivebutton.inactive"));
 	}
 }

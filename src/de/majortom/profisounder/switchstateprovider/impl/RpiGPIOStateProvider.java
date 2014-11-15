@@ -28,27 +28,6 @@ import de.majortom.profisounder.switchstateprovider.impl.mapping.SwitchMapping;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class RpiGPIOStateProvider extends AbstractSwitchStateProvider {
-	private class SwitchChangeFeedback extends Thread {
-		private GPIOPin sourcePin;
-		private GpioPinDigitalOutput outputPin;
-
-		public SwitchChangeFeedback(GPIOPin sourcePin, GpioPinDigitalOutput outputPin) {
-			this.sourcePin = sourcePin;
-			this.outputPin = outputPin;
-		}
-
-		@Override
-		public void run() {
-			Future<?> blink = outputPin.blink(100, 1000);
-			try {
-				blink.get();
-			} catch (Exception e) {
-			} finally {
-				outputPin.setState(sourcePin.getStateNF());
-			}
-		}
-	}
-
 	private class GPIOPin implements GpioPinListenerDigital {
 		private SwitchMapping mapping;
 
@@ -93,14 +72,35 @@ public class RpiGPIOStateProvider extends AbstractSwitchStateProvider {
 				pin.removeListener(this);
 		}
 
-		private boolean getState(boolean physicalIsHigh) {
-			return (mapping.isPullUp() && !physicalIsHigh) || (!mapping.isPullUp() && physicalIsHigh);
-		}
-
 		private void doFeedback() {
 			if (pinFeedback != null) {
 				SwitchChangeFeedback bf = new SwitchChangeFeedback(this, pinFeedback);
 				bf.start();
+			}
+		}
+
+		private boolean getState(boolean physicalIsHigh) {
+			return (mapping.isPullUp() && !physicalIsHigh) || (!mapping.isPullUp() && physicalIsHigh);
+		}
+	}
+
+	private class SwitchChangeFeedback extends Thread {
+		private GPIOPin sourcePin;
+		private GpioPinDigitalOutput outputPin;
+
+		public SwitchChangeFeedback(GPIOPin sourcePin, GpioPinDigitalOutput outputPin) {
+			this.sourcePin = sourcePin;
+			this.outputPin = outputPin;
+		}
+
+		@Override
+		public void run() {
+			Future<?> blink = outputPin.blink(100, 1000);
+			try {
+				blink.get();
+			} catch (Exception e) {
+			} finally {
+				outputPin.setState(sourcePin.getStateNF());
 			}
 		}
 	}

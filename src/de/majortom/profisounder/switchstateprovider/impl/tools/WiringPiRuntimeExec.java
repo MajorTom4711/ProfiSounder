@@ -7,14 +7,14 @@ import java.io.InputStreamReader;
 public class WiringPiRuntimeExec {
 	private static final String GPIO_CMD = "/usr/local/bin/gpio";
 
-	public boolean testRuntime() throws IOException {
-		executeCommandIntRet(false, GPIO_CMD, "readall");
-		return true;
-	}
-
 	public int readPin(int pinNumber) throws IOException {
 		executeCommandIntRet(false, GPIO_CMD, "mode", Integer.toString(pinNumber), "in");
 		return executeCommandIntRet(true, GPIO_CMD, "read", Integer.toString(pinNumber));
+	}
+
+	public boolean testRuntime() throws IOException {
+		executeCommandIntRet(false, GPIO_CMD, "readall");
+		return true;
 	}
 
 	public void writePin(int pinNumber, boolean high) throws IOException {

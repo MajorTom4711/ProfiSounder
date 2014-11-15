@@ -7,11 +7,11 @@ import java.util.logging.Level;
 
 public class Message implements Comparable<Message> {
 
+	private static ResourceBundle MESSAGES;
+
 	public static void setResourceBundle(ResourceBundle bundle) {
 		MESSAGES = bundle;
 	}
-
-	private static ResourceBundle MESSAGES;
 
 	private Date date;
 
@@ -34,6 +34,11 @@ public class Message implements Comparable<Message> {
 		}
 	}
 
+	@Override
+	public int compareTo(Message o) {
+		return date.compareTo(o.date);
+	}
+
 	public Date getDate() {
 		return date;
 	}
@@ -48,10 +53,5 @@ public class Message implements Comparable<Message> {
 
 	public String getMessage() {
 		return message;
-	}
-
-	@Override
-	public int compareTo(Message o) {
-		return date.compareTo(o.date);
 	}
 }
