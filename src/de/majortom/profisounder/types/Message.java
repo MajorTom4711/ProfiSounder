@@ -1,10 +1,11 @@
 package de.majortom.profisounder.types;
 
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 
-public class Message {
+public class Message implements Comparable<Message> {
 
 	public static void setResourceBundle(ResourceBundle bundle) {
 		MESSAGES = bundle;
@@ -12,11 +13,14 @@ public class Message {
 
 	private static ResourceBundle MESSAGES;
 
+	private Date date;
+
 	private Level level;
 	private String message;
 	private Throwable exception;
 
-	public Message(Level level, String message, Throwable exception, boolean useFormatter, Object... msgFormatParams) {
+	public Message(Date date, Level level, String message, Throwable exception, boolean useFormatter, Object... msgFormatParams) {
+		this.date = date;
 		this.level = level;
 		this.exception = exception;
 
@@ -30,6 +34,10 @@ public class Message {
 		}
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
 	public Throwable getException() {
 		return exception;
 	}
@@ -40,5 +48,10 @@ public class Message {
 
 	public String getMessage() {
 		return message;
+	}
+
+	@Override
+	public int compareTo(Message o) {
+		return date.compareTo(o.date);
 	}
 }

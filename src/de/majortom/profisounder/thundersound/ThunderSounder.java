@@ -61,7 +61,7 @@ public class ThunderSounder implements ISounderInterface, ISwitchStateListener {
 				actions.addAll(sw.getAllActions());
 			}
 		} catch (Exception ex) {
-			throw new RuntimeException(messages.getString("errors.init.configuration"), ex);
+			throw new RuntimeException(ex.getMessage() == null ? messages.getString("errors.init.configuration") : ex.getMessage(), ex);
 		}
 	}
 

@@ -1,8 +1,10 @@
 package de.majortom.profisounder.notifications;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -22,7 +24,6 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 	private CircularFifoBuffer<Message> logBuffer;
 
 	private volatile Long pmIndex = Long.MIN_VALUE;
-
 	private volatile boolean active = true;
 
 	public ProfiSounderLogAppender(int logBufferSize) {
@@ -47,10 +48,18 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 		if (!active)
 			throw new RuntimeException("This handler is closed!");
 
-		Message msg = new Message(record.getLevel(), record.getMessage(), record.getThrown(), false, (Object[]) null);
+		Message msg = new Message(new Date(record.getMillis()), record.getLevel(), record.getMessage(), record.getThrown(), false, (Object[]) null);
 		logBuffer.add(msg);
 
 		fireLogUpdated(true, false, msg);
+	}
+
+	public List<Message> getLogBuffer() {
+		return new ArrayList<Message>(logBuffer);
+	}
+
+	public List<Message> getPersistentMessages() {
+		return new ArrayList<Message>(persistentMessages.values());
 	}
 
 	@Override
@@ -60,7 +69,7 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 
 	@Override
 	public long notification(boolean set, Level level, String message, Throwable exception, Object[] msgFormatParams) {
-		Message msg = new Message(level, message, exception, true, msgFormatParams);
+		Message msg = new Message(new Date(), level, message, exception, true, msgFormatParams);
 		Long key = null;
 
 		if (!set) {
@@ -92,18 +101,18 @@ public class ProfiSounderLogAppender extends Handler implements IPersistentNotif
 		}
 
 		if (message != null && !message.isEmpty()) {
-			Message msg = new Message(Level.FINE, message, null, true, msgFormatParams);
+			Message msg = new Message(new Date(), Level.FINE, message, null, true, msgFormatParams);
 			logBuffer.add(msg);
 
 			fireLogUpdated(true, false, msg);
 		}
 	}
 
-	public void addFooListener(ILogUpdatedListener l) {
+	public void addLockUpdatedListener(ILogUpdatedListener l) {
 		listenerList.add(ILogUpdatedListener.class, l);
 	}
 
-	public void removeFooListener(ILogUpdatedListener l) {
+	public void removeLockUpdatedListener(ILogUpdatedListener l) {
 		listenerList.remove(ILogUpdatedListener.class, l);
 	}
 

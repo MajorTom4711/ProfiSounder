@@ -141,23 +141,24 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 		}
 	}
 
-	private KeepAlive keepAlive;
-	private SystemTray tray;
-
+	private BufferedImage trayImage;
+	private ProfisounderGUI gui;
 	private TaskIconDisplayer tid;
+	private SystemTray tray;
 	private TrayIcon trayIcon;
 
-	private BufferedImage trayImage;
+	private KeepAlive keepAlive;
 
 	private ResourceBundle messages;
 	private ThunderSounder sounder;
 	private GUISettings settings;
 
-	private final Map<Integer, Message> notificationStates = new HashMap<Integer, Message>();
+	private ProfiSounderLogAppender customLogAppender;
 
 	private boolean headless;
 
 	public ThunderSounderStandalone() {
+		gui = null;
 		headless = GraphicsEnvironment.isHeadless();
 	}
 
@@ -174,6 +175,10 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 
 		System.exit(0);
 		return true;
+	}
+
+	public ThunderSounder getSounder() {
+		return sounder;
 	}
 
 	@Override
@@ -234,11 +239,11 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 			FileHandler fileHandler = new FileHandler("logs/profisounder-log.%u.%g.txt", 1024 * 1024, 10, true);
 			fileHandler.setFormatter(new SimpleFormatter());
 
-			ProfiSounderLogAppender psla = new ProfiSounderLogAppender(50);
+			customLogAppender = new ProfiSounderLogAppender(50);
 
 			global.addHandler(consoleHandler);
 			global.addHandler(fileHandler);
-			global.addHandler(psla);
+			global.addHandler(customLogAppender);
 
 			global.setLevel(Level.FINE);
 
@@ -262,7 +267,7 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 				initTrayIcon();
 			}
 
-			Logger.getLogger(this.getClass().getName()).log(Level.FINE, "sounder.initialized");
+			Logger.getLogger(this.getClass().getName()).log(Level.FINE, messages.getString("sounder.initialised"));
 		} catch (Exception ex) {
 			showException("Severe error, unable to continue!", ex, false);
 			return false;
@@ -288,7 +293,10 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				synchronized (ThunderSounderStandalone.this) {
-					ProfisounderGUI gui = new ProfisounderGUI(sounder, settings, messages, ThunderSounderStandalone.this);
+					if (gui != null && gui.isActive())
+						return;
+
+					gui = new ProfisounderGUI(settings, messages, customLogAppender, ThunderSounderStandalone.this);
 					gui.setLocationRelativeTo(null);
 					gui.setVisible(true);
 				}
@@ -340,7 +348,7 @@ public class ThunderSounderStandalone implements ISwitchStateListener {
 
 		if (!headless) {
 			String simpleName = MessageFormat.format(messages.getString("dialogs.error.header"), t.getClass().getSimpleName());
-			String msg = t.getMessage() != null && !t.getMessage().isEmpty() ? "\n\n\"" + t.getMessage() + "\t" : "";
+			String msg = t.getMessage() != null && !t.getMessage().isEmpty() ? "\n\n\"" + t.getMessage() + "\"" : "";
 
 			JOptionPane.showMessageDialog(null, simpleName + msg, "Severe error!", JOptionPane.ERROR_MESSAGE);
 		}

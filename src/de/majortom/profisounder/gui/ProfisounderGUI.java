@@ -6,63 +6,145 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTextPane;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.table.AbstractTableModel;
 
 import de.majortom.profisounder.ThunderSounderStandalone;
-import de.majortom.profisounder.thundersound.ThunderSounder;
+import de.majortom.profisounder.gui.components.JTooltipTable;
+import de.majortom.profisounder.notifications.ILogUpdatedListener;
+import de.majortom.profisounder.notifications.LogUpdatedEvent;
+import de.majortom.profisounder.notifications.ProfiSounderLogAppender;
+import de.majortom.profisounder.types.Message;
 
-public class ProfisounderGUI extends JFrame {
+public class ProfisounderGUI extends JDialog implements ILogUpdatedListener {
 	private static final long serialVersionUID = -6094576807363459690L;
+
+	@SuppressWarnings("serial")
+	private class MessageTableModel extends AbstractTableModel {
+		private final DateFormat df = new SimpleDateFormat("dd.MM.yy HH:mm:ss.SSS");
+		private List<Message> messageLog;
+
+		public MessageTableModel(List<Message> messageLog) {
+			this.messageLog = messageLog;
+		}
+
+		@Override
+		public int getColumnCount() {
+			return 3;
+		}
+
+		@Override
+		public int getRowCount() {
+			return messageLog.size();
+		}
+
+		@Override
+		public String getColumnName(int column) {
+			switch (column) {
+			case 0:
+				return messages.getString("dialogs.gui.logtables.colTime");
+			case 1:
+				return messages.getString("dialogs.gui.logtables.colLevel");
+			default:
+				return messages.getString("dialogs.gui.logtables.colMessage");
+			}
+		}
+
+		@Override
+		public Object getValueAt(int rowIndex, int columnIndex) {
+			Message msg = messageLog.get(rowIndex);
+			switch (columnIndex) {
+			case 0:
+				return df.format(msg.getDate());
+			case 1:
+				return msg.getLevel();
+			default:
+				return msg.getMessage();
+			}
+		}
+
+		public void addMessage(Message msg) {
+			messageLog.add(msg);
+			Collections.sort(messageLog);
+
+			fireTableDataChanged();
+		}
+	}
 
 	private JPanel contentPane;
 
 	private ThunderSounderStandalone standalone;
+	private ProfiSounderLogAppender appender;
 	private ResourceBundle messages;
-
-	private ThunderSounder sounder;
 	private GUISettings settings;
 
 	private DecimalFormat df = new DecimalFormat("0.0");
 	private boolean ignoreSliderAction = false;
+	private boolean windowActive = true;
 
 	private JToggleButton tglbtnMute;
 	private JToggleButton tglbtnSounderActive;
+	private JTooltipTable tableLogMessages;
+	private JTooltipTable tableCriticalMessages;
 
-	public ProfisounderGUI(ThunderSounder sounder, GUISettings settings, ResourceBundle messages, ThunderSounderStandalone exitRequests) {
-		this.sounder = sounder;
+	private MessageTableModel mtmCriticalMessages;
+	private MessageTableModel mtmLogMessages;
+
+	public ProfisounderGUI(GUISettings settings, ResourceBundle messages, ProfiSounderLogAppender appender, ThunderSounderStandalone exitRequests) {
 		this.settings = settings;
-
 		this.messages = messages;
+
+		this.appender = appender;
 		this.standalone = exitRequests;
 
+		appender.addLockUpdatedListener(this);
+
 		initGUI();
+	}
+
+	@Override
+	public void logUpdated(LogUpdatedEvent luEvent) {
+		if (luEvent.isLogUpdated())
+			mtmLogMessages.addMessage(luEvent.getMessage());
+		else
+			mtmCriticalMessages.addMessage(luEvent.getMessage());
 	}
 
 	public GUISettings getSettings() {
 		return settings;
 	}
 
+	public boolean isWindowActive() {
+		return windowActive;
+	}
+
 	private void initGUI() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(0, 0, 600, 500);
 		setMinimumSize(new Dimension(600, 500));
-		
+
 		setTitle(messages.getString("dialogs.gui.title"));
 		setResizable(true);
 
@@ -87,12 +169,11 @@ public class ProfisounderGUI extends JFrame {
 		gbc_scrollPaneCritical.gridy = 0;
 		contentPane.add(scrollPaneCritical, gbc_scrollPaneCritical);
 
-		JTextPane textPaneCritical = new JTextPane();
-		textPaneCritical.setEditable(false);
-		scrollPaneCritical.setViewportView(textPaneCritical);
+		tableCriticalMessages = new JTooltipTable();
+		scrollPaneCritical.setViewportView(tableCriticalMessages);
 
 		tglbtnSounderActive = new JToggleButton();
-		tglbtnSounderActive.setSelected(settings.active && sounder.isStarted());
+		tglbtnSounderActive.setSelected(settings.active && standalone.getSounder().isStarted());
 
 		GridBagConstraints gbc_tglbtnSounderActive = new GridBagConstraints();
 		gbc_tglbtnSounderActive.anchor = GridBagConstraints.NORTH;
@@ -134,7 +215,6 @@ public class ProfisounderGUI extends JFrame {
 
 		final JSlider sliderVolume = new JSlider();
 		sliderVolume.setLabelTable(labelTable);
-		lblGain.setText(messages.getString("dialogs.gui.gain.label") + ": " + df.format(sliderVolume.getValue() / 10f));
 
 		sliderVolume.setMinorTickSpacing(1);
 		sliderVolume.setMajorTickSpacing(4);
@@ -155,6 +235,8 @@ public class ProfisounderGUI extends JFrame {
 		sliderVolume.setValue((int) (settings.muted ? 0 : settings.gain * 10));
 		sliderVolume.setEnabled(!settings.muted);
 
+		lblGain.setText(messages.getString("dialogs.gui.gain.label") + ": " + df.format(sliderVolume.getValue() / 10f));
+
 		JScrollPane scrollPaneMsgs = new JScrollPane();
 		scrollPaneMsgs.setBorder(new TitledBorder(messages.getString("dialogs.gui.border.messages")));
 		GridBagConstraints gbc_scrollPaneMsgs = new GridBagConstraints();
@@ -164,8 +246,8 @@ public class ProfisounderGUI extends JFrame {
 		gbc_scrollPaneMsgs.gridy = 4;
 		contentPane.add(scrollPaneMsgs, gbc_scrollPaneMsgs);
 
-		JTextPane textPaneMsgs = new JTextPane();
-		scrollPaneMsgs.setViewportView(textPaneMsgs);
+		tableLogMessages = new JTooltipTable();
+		scrollPaneMsgs.setViewportView(tableLogMessages);
 
 		JButton btnHide = new JButton("Hide");
 		GridBagConstraints gbc_btnHide = new GridBagConstraints();
@@ -184,6 +266,15 @@ public class ProfisounderGUI extends JFrame {
 		gbc_btnExit.gridy = 4;
 		contentPane.add(btnExit, gbc_btnExit);
 
+		mtmCriticalMessages = new MessageTableModel(appender.getPersistentMessages());
+		mtmLogMessages = new MessageTableModel(appender.getLogBuffer());
+
+		tableCriticalMessages.setModel(mtmCriticalMessages);
+		tableLogMessages.setModel(mtmLogMessages);
+
+		tableCriticalMessages.setAutoCreateRowSorter(true);
+		tableLogMessages.setAutoCreateRowSorter(true);
+
 		changeActiveLabel();
 		changeMuteLabel();
 
@@ -194,10 +285,10 @@ public class ProfisounderGUI extends JFrame {
 				changeActiveLabel();
 				if (tglbtnSounderActive.isSelected()) {
 					settings.active = true;
-					sounder.start();
+					standalone.getSounder().start();
 				} else {
 					settings.active = false;
-					sounder.stop();
+					standalone.getSounder().stop();
 				}
 			}
 		});
@@ -211,12 +302,12 @@ public class ProfisounderGUI extends JFrame {
 				changeMuteLabel();
 				if (tglbtnMute.isSelected()) {
 					settings.muted = true;
-					sounder.setGain(0);
+					standalone.getSounder().setGain(0);
 
 					sliderVolume.setValue(0);
 				} else {
 					settings.muted = false;
-					sounder.setGain(settings.gain);
+					standalone.getSounder().setGain(settings.gain);
 
 					sliderVolume.setValue((int) (settings.gain * 10));
 				}
@@ -231,7 +322,7 @@ public class ProfisounderGUI extends JFrame {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				if (!ignoreSliderAction) {
-					sounder.setGain(sliderVolume.getValue() / 10f);
+					standalone.getSounder().setGain(sliderVolume.getValue() / 10f);
 
 					settings.gain = sliderVolume.getValue() / 10f;
 					lblGain.setText(messages.getString("dialogs.gui.gain.label") + ": " + df.format(sliderVolume.getValue() / 10f));
@@ -243,7 +334,7 @@ public class ProfisounderGUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				standalone.requestExit(ProfisounderGUI.this);
+				close(true);
 			}
 		});
 
@@ -251,10 +342,26 @@ public class ProfisounderGUI extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ProfisounderGUI.this.settings.saveSettings();
-				dispose();
+				close(false);
 			}
 		});
+
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				windowActive = false;
+			}
+		});
+	}
+
+	private void close(boolean exitTool) {
+		settings.saveSettings();
+		appender.removeLockUpdatedListener(this);
+
+		if (exitTool)
+			standalone.requestExit(ProfisounderGUI.this);
+		else
+			dispose();
 	}
 
 	private void changeMuteLabel() {
