@@ -31,7 +31,7 @@ public class Switch implements Comparable<Switch> {
 	private Integer samplingRateHigh = -1;
 
 	@XmlElements({ @XmlElement(name = "onStateIs", type = OnStateIs.class), @XmlElement(name = "onStateChanged", type = OnStateChanged.class), })
-	private List<AbstractStateChange> stateChanges;
+	private List<AbstractStateChange> stateChanges = new ArrayList<>();
 
 	private List<AbstractAction> actions = new ArrayList<AbstractAction>();
 

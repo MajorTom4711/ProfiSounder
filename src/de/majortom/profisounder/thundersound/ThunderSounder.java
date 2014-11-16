@@ -42,11 +42,14 @@ public class ThunderSounder implements ISounderInterface, ISwitchStateListener {
 
 		try {
 			// Sort out config
+			defaultSamplingRate = config.getDefaultSampleRate();
+
+			if (defaultSamplingRate < 500 || defaultSamplingRate > 3600000)
+				throw new IllegalArgumentException(MessageFormat.format(messages.getString("errors.switch.samplingratesoutofrange"), 500, 3600000));
+
 			atsp = config.getSwitchStateProvider().getSwitchStateprovider();
 			atsp.setSamplingRateMS(config.getDefaultSampleRate());
 			atsp.initialize();
-
-			defaultSamplingRate = config.getDefaultSampleRate();
 
 			List<Integer> supportedSwitches = atsp.getSupportedSwitches();
 			for (Switch sw : config.getSwitches()) {

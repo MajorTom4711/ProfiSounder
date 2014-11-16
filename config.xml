@@ -14,32 +14,32 @@
 	<switch switchNumber="2">
 		<onStateChanged previousState="HIGH" durationToMS="3000" oneOfAction="true">
 			<playSound soundFile="sounds/Thunder_04.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_04_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_05.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_06.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_06_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_07.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_07_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_07_02.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_08.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_08_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_09.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_09_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_09_02.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_10.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_11.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_11_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_12.wav" />
+			<playSound soundFile="sounds/Thunder_04_01.wav" />
+			<playSound soundFile="sounds/Thunder_05.wav" />
+			<playSound soundFile="sounds/Thunder_06.wav" />
+			<playSound soundFile="sounds/Thunder_06_01.wav" />
+			<playSound soundFile="sounds/Thunder_07.wav" />
+			<playSound soundFile="sounds/Thunder_07_01.wav" />
+			<playSound soundFile="sounds/Thunder_07_02.wav" />
+			<playSound soundFile="sounds/Thunder_08.wav" />
+			<playSound soundFile="sounds/Thunder_08_01.wav" />
+			<playSound soundFile="sounds/Thunder_09.wav" />
+			<playSound soundFile="sounds/Thunder_09_01.wav" />
+			<playSound soundFile="sounds/Thunder_09_02.wav" />
+			<playSound soundFile="sounds/Thunder_10.wav" />
+			<playSound soundFile="sounds/Thunder_11.wav" />
+			<playSound soundFile="sounds/Thunder_11_01.wav" />
+			<playSound soundFile="sounds/Thunder_12.wav" />
 		</onStateChanged>
 		<onStateChanged previousState="HIGH" durationFromMS="3000" oneOfAction="true">
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_13_02.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_15.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_15_01.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_16.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_19.wav" />
-			<playSound fadeInDuration="0" loopCount="0" volume="1" soundFile="sounds/Thunder_25.wav" />
+			<playSound soundFile="sounds/Thunder_13.wav" />
+			<playSound soundFile="sounds/Thunder_13_01.wav" />
+			<playSound soundFile="sounds/Thunder_13_02.wav" />
+			<playSound soundFile="sounds/Thunder_15.wav" />
+			<playSound soundFile="sounds/Thunder_15_01.wav" />
+			<playSound soundFile="sounds/Thunder_16.wav" />
+			<playSound soundFile="sounds/Thunder_19.wav" />
+			<playSound soundFile="sounds/Thunder_25.wav" />
 		</onStateChanged>
 	</switch>
 	<switch switchNumber="3">
