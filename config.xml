@@ -4,9 +4,9 @@
 		<netPollerOld profiluxAddress="http://192.168.0.200" />
 	</switchStateProvider>
 	<switch samplingRateHigh="500" switchNumber="1">
-		<onStateChanged previousState="LOW">
+		<onStateIs currentState="HIGH">
 			<setVolumeSwitch fadeDuration="40000" switchNumber="3" volume="0.6" />
-		</onStateChanged>
+		</onStateIs>
 		<onStateChanged previousState="HIGH">
 			<setVolumeSwitch fadeDuration="40000" switchNumber="3" volume="0.1" />
 		</onStateChanged>

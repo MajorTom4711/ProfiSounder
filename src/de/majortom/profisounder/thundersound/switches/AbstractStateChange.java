@@ -35,6 +35,8 @@ public abstract class AbstractStateChange {
 	protected Boolean oneOfAction = false;
 	@XmlAttribute(required = false)
 	protected Boolean skipActionIfActive = true;
+	@XmlAttribute(required = false)
+	protected Boolean checkStateAtStartup = true;
 
 	protected Logger logger = Logger.getLogger(AbstractStateChange.class.getName());
 
@@ -70,7 +72,9 @@ public abstract class AbstractStateChange {
 	}
 
 	public void setInitialState(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException {
-		// Does nothing here, 'cause IMHO for, e.g, Duration not usable
+		if (checkStateAtStartup) {
+			switchStateChanged(state, thunderSounder, messages);
+		}
 	}
 
 	public abstract void switchStateChanged(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException;

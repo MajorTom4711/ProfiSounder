@@ -20,8 +20,6 @@ public class OnStateIs extends AbstractStateChange {
 
 	@XmlAttribute(required = false)
 	private CurrentState currentState = CurrentState.HIGH;
-	@XmlAttribute(required = false)
-	private Boolean checkStateAtStartup = true;
 
 	public OnStateIs() {
 	}
@@ -30,13 +28,6 @@ public class OnStateIs extends AbstractStateChange {
 	public void initializeInternal(ISounderInterface thunderSounder, ResourceBundle messages) {
 		for (AbstractAction ac : actions) {
 			ac.initialize(thunderSounder, messages);
-		}
-	}
-
-	@Override
-	public void setInitialState(boolean state, ISounderInterface thunderSounder, ResourceBundle messages) throws IOException {
-		if (checkStateAtStartup) {
-			switchStateChanged(state, thunderSounder, messages);
 		}
 	}
 
